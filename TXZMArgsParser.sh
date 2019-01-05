@@ -10,7 +10,6 @@
 # -acv将会被转换为_tFlags[c]=0,_tFlags[a]=0,_tFlags[v]=0
 # --value=10将会被转换为_tArgs[value]=10
 # 所有的参数都会被存在_tFlags与_tArgs的关联数组中
-# 已知的问题:目前并不支持参数中带空格
 tArgsParseSingle(){
     local e=$1;
     local prefix=${e:0:1};
@@ -34,28 +33,29 @@ tARgsParseDouble(){
 }
 
 tArgsParse(){
-    local e;
-    for e in $@;
+    local i;
+    for (( i=1; i <= $#; i++ ));
     do
-        # echo "handle:${e}";
+	local e=`eval echo '$'"$i"`;
+        #echo "handle:${e}";
         local prefix=${e:0:2};
         if [[ $prefix = -- ]]; then
-            tARgsParseDouble $e;
+            tARgsParseDouble "$e";
         else
-            tArgsParseSingle $e;
+            tArgsParseSingle "$e";
         fi
     done
 }
 
 declare -A _tFlags;
 declare -A _tArgs;
-tArgsParse $@;
+tArgsParse "$@";
 
-# for key in ${!_tFlags[@]};
-# do
-#     echo "flag:${key}";
-# done
-# for key in ${!_tArgs[@]};
-# do
-#     echo "key:${key},value:${_tArgs[$key]}";
-# done
+#for key in ${!_tFlags[@]};
+#do
+#    echo "flag:${key}";
+#done
+#for key in ${!_tArgs[@]};
+#do
+#    echo "key:${key},value:${_tArgs[$key]}";
+#done
